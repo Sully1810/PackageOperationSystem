@@ -15,10 +15,15 @@ init(Req0, Opts) ->
 	}, Encoded_message, Req0),
 	{ok, Response, Opts}.
 
+
+
+mark_delivered(JSON) ->
+	delivered_server:mark_delivered(JSON).
+
+    
+
 -ifdef(EUNIT).
 
 -include_lib("eunit/include/eunit.hrl").
 
-mark_delivered(JSON) ->
-
-    
+-endif.
