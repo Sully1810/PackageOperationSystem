@@ -24,4 +24,10 @@ mark_delivered(JSON) ->
 
 -include_lib("eunit/include/eunit.hrl").
 
+% assert 200 = delivered_h.send({delivered, ...}, _where})
+
+mark_delivered_test() ->
+	JSON = "{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}",
+	?_assertEqual(ok, mark_delivered(JSON)).
+
 -endif.
