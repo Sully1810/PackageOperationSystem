@@ -20,8 +20,6 @@ mark_delivered(JSON) ->
 	% Send parsed JSON to back end
 	delivered_server:mark_delivered(JSON).
 
-    
-
 -ifdef(EUNIT).
 
 -include_lib("eunit/include/eunit.hrl").
