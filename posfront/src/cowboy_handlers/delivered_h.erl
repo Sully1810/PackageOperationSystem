@@ -7,11 +7,10 @@ init(Req0, Opts) ->
 	%it is expected that the data consists of one quoted-string name
 	%in an array.
 	% Parsing the JSON file
-	mark_delivered(jsx:decode(Data)),
-	        
+	mark_delivered(jsx:decode(Data)),     
 	Response = cowboy_req:reply(200, #{
 		<<"content-type">> => <<"text/json">>
-	}, Encoded_message, Req0),
+	}, success, Req0),
 	{ok, Response, Opts}.
 
 

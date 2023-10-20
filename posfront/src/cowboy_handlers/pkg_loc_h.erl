@@ -9,10 +9,9 @@ init(Req0, Opts) ->
 	%in an array.
 	% Parsing the JSON file
 	Package_data = package_locate(jsx:decode(Data)),
-	        
-	Response = cowboy_req:reply(Package_data, #{
+	Response = cowboy_req:reply(200, #{
 		<<"content-type">> => <<"text/json">>
-	}, Encoded_message, Req0),
+	}, jsx:encode(Package_data), Req0),
 	{ok, Response, Opts}.
 
 
