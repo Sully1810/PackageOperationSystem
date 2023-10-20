@@ -16,7 +16,7 @@ start(_Type, _Args) ->
 	        {"/", toppage_h, []},
 		{"/delivered",delivered_h,[]},
 		{"/pkg_loc",pkg_loc_h,[]},
-		{"/pkg_upd",pkg_upd_h,[]}
+		{"/pkg_upd",pkg_upd_h,[]},
         {"/rpt_loc",rpt_loc_h,[]}
 	    ]}
 	]),
