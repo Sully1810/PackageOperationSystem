@@ -24,8 +24,25 @@ update_location(JSON) ->
 
 % assert 200 = delivered_h.send({delivered, ...}, _where})
 
-update_location_test() ->
-	JSON = "{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}",
-	?_assertEqual(ok, update_location(JSON)).
+%update_location_test() ->
+	%JSON = "{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}",
+	%?_assertEqual(ok, update_location(JSON)).
+
+update_locate_test_() ->
+	{setup,
+		fun() -> % This setup fun is ran once before the tests are run. Have to setup and teardown.
+		% Call the delivered_server
+		meck:new(delivered_server, [non_strict]),
+		% Tells it to use the delivered_server to test mark_delivered if we receive a JSON, it will be successful. 
+		meck:expect(delivered_server, update_location, fun(JSON) -> "Successful" end)
+		
+		end,
+		fun(_) ->%This is the teardown fun. Notice it takes one parameter.
+		meck:unload(delivered_server)
+		end,
+		[%This is the list of tests to be generated and run.
+		% It is successful if the JSON looks like that tuple below.
+		?_assertEqual("Successful", update_location("{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}"))
+		]}.
 
 -endif.

@@ -25,8 +25,25 @@ package_locate(JSON) ->
 
 % assert 200 = delivered_h.send({delivered, ...}, _where})
 
-package_locate_test() ->
-	JSON = "{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"}",
-	?_assertEqual("{\"lat\":40.7128,\"long\":-74.0060,\"time\":1634578382}", package_locate(JSON)).
+%package_locate_test() ->
+	%JSON = "{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"}",
+	%?_assertEqual("{\"lat\":40.7128,\"long\":-74.0060,\"time\":1634578382}", package_locate(JSON)).
+
+package_locate_test_() ->
+	{setup,
+		fun() -> % This setup fun is ran once before the tests are run. Have to setup and teardown.
+		% Call the pkg_loc_server
+		meck:new(pkg_loc_server, [non_strict]),
+		% Tells it to use the pkg_loc_server to test mark_delivered if we receive a JSON, it will be successful. 
+		meck:expect(pkg_loc_server, package_locate, fun(JSON) -> "{\"lat\":40.7128,\"long\":-74.0060,\"time\":1634578382}" end)
+		
+		end,
+		fun(_) ->%This is the teardown fun. Notice it takes one parameter.
+		meck:unload(pkg_loc_server)
+		end,
+		[%This is the list of tests to be generated and run.
+		% It is successful if the JSON looks like that tuple below.
+		?_assertEqual("{\"lat\":40.7128,\"long\":-74.0060,\"time\":1634578382}", package_locate("{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"}"))
+		]}.
 
 -endif.
