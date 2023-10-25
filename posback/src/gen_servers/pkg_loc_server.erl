@@ -6,7 +6,7 @@
 %%        Creative Commons Attribution 4.0 International License</a>
 %%
 %%
--module(delivered_server).
+-module(pkg_loc_server).
 -behaviour(gen_server).
 
 %% Only include the eunit testing library
@@ -17,7 +17,7 @@
 -endif.
 
 %% API
--export([start/0, start/3,stop/0]).
+-export([start/0, start/3,stop/0, package_locate/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -66,10 +66,10 @@ stop() -> gen_server:call(?MODULE, stop).
 
 %% Any other API functions go here.
 
-mark_delivered(JSON) ->
+package_locate(JSON) ->
     % Tuple requires two parameters: function name and JSON data
     % JSON data is now a map
-    gen_server:cast(?MODULE, {mark_delivered, JSON}).
+    gen_server:call(?MODULE, {package_locate, JSON}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -113,59 +113,12 @@ handle_call(stop, _From, _State) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--record (json, {uuid, lat, long, time}).
 -spec handle_cast(Msg::term(), State::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-% handle_cast(_Msg, State) ->
-%     % print hello
-%     io:format("Hello~n"),
-%     {noreply, State};
-handle_cast(mark_delivered, State) ->
-    % Decode another json string as a test
-    JSON2 = jsx:decode(<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}">>),
+handle_cast(_Msg, State) ->
+    {noreply, State}.
 
-% Print out the JSON to see its structure
-    io:format("JSON: ~p~n", [JSON2]),
-    #{<<"uuid">> := UUID, <<"lat">> := LAT, <<"long">> := LONG, <<"time">> := TIME} = JSON2,
-    % Print out the JSON to see its structure from JSON3
-    UUIDString = binary_to_list(UUID),
-    io:format("UUID: ~s~n", [UUIDString]),
-    io:format("LAT: ~p~n", [LAT]),
-    io:format("LONG: ~p~n", [LONG]),
-
-
-    %JSON: #{<<"lat">> => 40.7128,<<"long">> => -74.006,<<"time">> => 1634578382,
-   % <<"uuid">> => <<"550e8400-e29b-41d4-a716-446655440000">>}
-   % {reply,replace_started,state}
-   % 
-   % print out the uuid to see if it is the same
-   % # define a record
-   % 
-   % io:format("UUID: ~p~n", [maps:get(<<"uuid">>,JSON2)]),
-    %io:format("LAT: ~p~n", [maps:get(<<"lat">>,JSON2)]),
-    %io:format("LONG: ~p~n", [maps:get(<<"long">>,JSON2)]),
-    %io:format("TIME: ~p~n", [maps:get(<<"time">>,JSON2)]),
-   
-    
-  
-    {reply,replace_started,State}.
-
-% decode_json(JSON) ->
-%     % Decode the json string
-%     JSON2 = jsx:decode(JSON),
-%     % Print out the JSON to see its structure
-%     io:format("JSON: ~p~n", [JSON2]),
-%     JSON2.
-
-% Facade function for testing
-% 
-
-
-
-% To use handle_cast with mark_delivered, use this command
-% delivered_server:handle_cast(mark_delivered,state).
-% delivered_server:start().
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -216,12 +169,10 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-delivered_server_test() ->
+pkg_loc_server_test() ->
     {setup,
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
-
         % Need to mock the RIAK database and the logger event manager
-        % placeholder mocking
         meck:new(riakc_obj),
         meck:new(riakc_pb_socket),
         meck:expect(riakc_obj, new, fun(Bucket,Key,Value) -> done end),
@@ -233,12 +184,12 @@ delivered_server_test() ->
     end,
 
     [%This is the list of tests to be generated and run.
-        
+
         % fix these later to appropriate response value
         ?_assertEqual({reply,worked,some_Db_PID},
-                            delivered_server:mark_delivered(<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}">>)),
+                            pkg_loc_server:package_locate(<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"">>)),
         ?_assertEqual({reply,{fail,bad_JSON},some_Db_PID},
-                            delivered_server:mark_delivered(<<"{\"uuid\": \"blah\"">>))
+                            pkg_loc_server:package_locate(<<"{\"uuid\": \"blah\"">>))
     ]}.
 %%
 %% Unit tests go here. 
