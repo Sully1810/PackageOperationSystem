@@ -66,10 +66,10 @@ stop() -> gen_server:call(?MODULE, stop).
 
 %% Any other API functions go here.
 
-update_location(JSON) ->
-    % Tuple requires two parameters: function name and JSON data
-    % JSON data is now a map
-    gen_server:call(?MODULE, {package_locate, JSON}).
+update_location(Package_uuid) ->
+    % Tuple requires two parameters: function name and Package_uuid data
+    % Package_uuid data is now a map
+    gen_server:call(?MODULE, {package_locate, Package_uuid}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -99,8 +99,8 @@ init([]) ->
                                   {noreply, term(), integer()} |
                                   {stop, term(), term(), integer()} | 
                                   {stop, term(), term()}.
-handle_call(Request, From, State) ->
-        {reply,replace_started,State};
+% handle_call({package_locate,Package_uuid}, _From, State) ->
+%         {reply,success,State};
 handle_call(stop, _From, _State) ->
         {stop,normal,
                 replace_stopped,
@@ -116,8 +116,8 @@ handle_call(stop, _From, _State) ->
 -spec handle_cast(Msg::term(), State::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-handle_cast(_Msg, State) ->
-    {noreply, State}.
+handle_cast({package_locate,Package_uuid}, State) ->
+    {reply, success,State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -169,7 +169,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-pkg_loc_server_test_() ->
+pkg_upd_server_test_() ->
     {setup,
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
         % Need to mock the RIAK database and the logger event manager
@@ -189,10 +189,10 @@ pkg_loc_server_test_() ->
     [%This is the list of tests to be generated and run.
 
         % fix these later to appropriate response value
-        ?_assertEqual({reply,worked,some_Db_PID},
-                            pkg_upd_server:update_location("{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}")),
-        ?_assertEqual({reply,{fail,bad_JSON},some_Db_PID},
-                            pkg_upd_server:update_location(<<"{\"pkg_uuid\": \"blah\"">>)),
+        ?_assertEqual({reply,success,some_state},
+                            pkg_upd_server:handle_cast({package_locate,<<"{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}">>},some_state)),
+        ?_assertEqual({reply,{fail,bad_JSON},some_state},
+                            pkg_upd_server:handle_cast({package_locate,<<"{\"pkg_uuid\": \"blah\"">>},some_state)),
         ?_assertEqual(log_success, gen_log_manager:log("{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}"))
 
     ]}.

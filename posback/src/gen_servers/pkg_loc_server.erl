@@ -66,10 +66,10 @@ stop() -> gen_server:call(?MODULE, stop).
 
 %% Any other API functions go here.
 
-package_locate(JSON) ->
+package_locate(Package_data) ->
     % Tuple requires two parameters: function name and JSON data
     % JSON data is now a map
-    gen_server:call(?MODULE, {package_locate, JSON}).
+    gen_server:call(?MODULE, {package_locate, Package_data}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -99,8 +99,8 @@ init([]) ->
                                   {noreply, term(), integer()} |
                                   {stop, term(), term(), integer()} | 
                                   {stop, term(), term()}.
-handle_call(Request, From, State) ->
-        {reply,replace_started,State};
+handle_call({package_locate,Package_data}, _Riak_pid, State) ->
+        {reply,{lat,long,time,delivered},State};
 handle_call(stop, _From, _State) ->
         {stop,normal,
                 replace_stopped,
@@ -175,7 +175,7 @@ pkg_loc_server_test_() ->
         % Need to mock the RIAK database and the logger event manager
         meck:new(riakc_obj),
         meck:new(riakc_pb_socket),
-        meck:new(gen_log_manager),
+        meck:new(gen_log_manager, [non_strict]),
         meck:expect(riakc_obj, new, fun(Bucket,Key,Value) -> done end),
         meck:expect(riakc_pb_socket, put, fun(Riak_pid,Request) -> worked end),
         meck:expect(gen_log_manager, log, fun(Data) -> log_success end)
@@ -189,10 +189,10 @@ pkg_loc_server_test_() ->
     [%This is the list of tests to be generated and run.
 
         % fix these later to appropriate response value
-        ?_assertEqual({reply,worked,some_Db_PID},
-                            pkg_loc_server:package_locate(<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"">>)),
-        ?_assertEqual({reply,{fail,bad_JSON},some_Db_PID},
-                            pkg_loc_server:package_locate(<<"{\"uuid\": \"blah\"">>)),
+        ?_assertEqual({reply,{lat,long,time,delivered},some_state},
+                            pkg_loc_server:handle_call({package_locate,<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"}">>},some_Db_PID,some_state)),
+        ?_assertEqual({reply,{fail,bad_JSON},some_state},
+                            pkg_loc_server:handle_call({package_locate,"blah"},some_Db_PID,some_state)),
         ?_assertEqual(log_success, gen_log_manager:log("{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"}"))
     ]}.
 %%

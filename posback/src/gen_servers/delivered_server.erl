@@ -121,7 +121,10 @@ handle_call(stop, _From, _State) ->
 %     % print hello
 %     io:format("Hello~n"),
 %     {noreply, State};
+handle_cast({mark_delivered,[]},State)->
+    {reply,{fail,bad_data},State};
 handle_cast({mark_delivered,Package_data}, State) ->
+    {reply,success,State}.
     % Decode another json string as a test
 
 % % Print out the JSON to see its structure
@@ -148,7 +151,7 @@ handle_cast({mark_delivered,Package_data}, State) ->
    
     
   
-    {reply,success,State}.
+    
 
 % decode_json(JSON) ->
 %     % Decode the json string

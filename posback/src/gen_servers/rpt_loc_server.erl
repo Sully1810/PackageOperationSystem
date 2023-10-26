@@ -66,10 +66,10 @@ stop() -> gen_server:call(?MODULE, stop).
 
 %% Any other API functions go here.
 
-mark_location(JSON) ->
-    % Tuple requires two parameters: function name and JSON data
-    % JSON data is now a map
-    gen_server:call(?MODULE, {mark_location, JSON}).
+mark_location(Vehicle_data) ->
+    % Tuple requires two parameters: function name and Package_uuid data
+    % Package_uuid data is now a map
+    gen_server:cast(?MODULE, {mark_location, Vehicle_data}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -116,8 +116,8 @@ handle_call(stop, _From, _State) ->
 -spec handle_cast(Msg::term(), State::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-handle_cast(_Msg, State) ->
-    {noreply, State}.
+handle_cast({mark_location,Vehicle_data}, State) ->
+    {reply,success,State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -169,7 +169,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-pkg_loc_server_test_() ->
+rpt_loc_server_test_() ->
     {setup,
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
         % Need to mock the RIAK database and the logger event manager
@@ -189,10 +189,10 @@ pkg_loc_server_test_() ->
     [%This is the list of tests to be generated and run.
 
         % fix these later to appropriate response value
-        ?_assertEqual({reply,worked,some_Db_PID},
-                            rpt_loc_server:mark_location("{\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\" \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}")),
+        ?_assertEqual({reply,success,some_state},
+                            rpt_loc_server:handle_cast({mark_location,some_data},some_state)),
         ?_assertEqual({reply,{fail,bad_JSON},some_Db_PID},
-                            rpt_loc_server:mark_location(<<"{\"loc_uuid\": \"blah\"">>)),
+                            rpt_loc_server:handle_cast({mark_location,[]},some_state)),
         ?_assertEqual(log_success, gen_log_manager:log("{\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\" \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}"))
     ]}.
 %%
