@@ -169,18 +169,21 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-pkg_loc_server_test() ->
+pkg_loc_server_test_() ->
     {setup,
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
         % Need to mock the RIAK database and the logger event manager
         meck:new(riakc_obj),
         meck:new(riakc_pb_socket),
+        meck:new(gen_log_manager, [non_strict]),
         meck:expect(riakc_obj, new, fun(Bucket,Key,Value) -> done end),
-        meck:expect(riakc_pb_socket, put, fun(Riak_pid,Request) -> worked end)
+        meck:expect(riakc_pb_socket, put, fun(Riak_pid,Request) -> worked end),
+        meck:expect(gen_log_manager, log, fun(Data) -> log_success end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
         meck:unload(riakc_obj),
-        meck:unload(riakc_pb_socket)
+        meck:unload(riakc_pb_socket),
+        meck:unload(gen_log_manager)
     end,
 
     [%This is the list of tests to be generated and run.
@@ -189,7 +192,9 @@ pkg_loc_server_test() ->
         ?_assertEqual({reply,worked,some_Db_PID},
                             pkg_upd_server:update_location("{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}")),
         ?_assertEqual({reply,{fail,bad_JSON},some_Db_PID},
-                            pkg_upd_server:package_locate(<<"{\"pkg_uuid\": \"blah\"">>))
+                            pkg_upd_server:update_location(<<"{\"pkg_uuid\": \"blah\"">>)),
+        ?_assertEqual(log_success, gen_log_manager:log("{\"pkg_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"time\": 1634578382}"))
+
     ]}.
 %%
 %% Unit tests go here. 

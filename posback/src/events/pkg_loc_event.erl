@@ -1,3 +1,3 @@
--module(pkg_loc_serv).
+-module(pkg_loc_event).
 
 -behaviour(gen_event).

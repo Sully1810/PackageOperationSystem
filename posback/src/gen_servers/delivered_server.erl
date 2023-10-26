@@ -66,10 +66,10 @@ stop() -> gen_server:call(?MODULE, stop).
 
 %% Any other API functions go here.
 
-mark_delivered(JSON) ->
+mark_delivered(Package_data) ->
     % Tuple requires two parameters: function name and JSON data
     % JSON data is now a map
-    gen_server:cast(?MODULE, {mark_delivered, JSON}).
+    gen_server:cast(?MODULE, {mark_delivered, Package_data}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -121,18 +121,17 @@ handle_call(stop, _From, _State) ->
 %     % print hello
 %     io:format("Hello~n"),
 %     {noreply, State};
-handle_cast(mark_delivered, State) ->
+handle_cast({mark_delivered,Package_data}, State) ->
     % Decode another json string as a test
-    JSON2 = jsx:decode(<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}">>),
 
-% Print out the JSON to see its structure
-    io:format("JSON: ~p~n", [JSON2]),
-    #{<<"uuid">> := UUID, <<"lat">> := LAT, <<"long">> := LONG, <<"time">> := TIME} = JSON2,
-    % Print out the JSON to see its structure from JSON3
-    UUIDString = binary_to_list(UUID),
-    io:format("UUID: ~s~n", [UUIDString]),
-    io:format("LAT: ~p~n", [LAT]),
-    io:format("LONG: ~p~n", [LONG]),
+% % Print out the JSON to see its structure
+%     io:format("JSON: ~p~n", [JSON2]),
+%     #{<<"uuid">> := UUID, <<"lat">> := LAT, <<"long">> := LONG, <<"time">> := TIME} = JSON2,
+%     % Print out the JSON to see its structure from JSON3
+%     UUIDString = binary_to_list(UUID),
+%     io:format("UUID: ~s~n", [UUIDString]),
+%     io:format("LAT: ~p~n", [LAT]),
+%     io:format("LONG: ~p~n", [LONG]),
 
 
     %JSON: #{<<"lat">> => 40.7128,<<"long">> => -74.006,<<"time">> => 1634578382,
@@ -149,7 +148,7 @@ handle_cast(mark_delivered, State) ->
    
     
   
-    {reply,replace_started,State}.
+    {reply,success,State}.
 
 % decode_json(JSON) ->
 %     % Decode the json string
@@ -216,7 +215,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-delivered_server_test() ->
+delivered_server_test_() ->
     {setup,
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
 
@@ -224,21 +223,25 @@ delivered_server_test() ->
         % placeholder mocking
         meck:new(riakc_obj),
         meck:new(riakc_pb_socket),
+        meck:new(gen_log_manager, [non_strict]),
+        meck:expect(gen_log_manager, log, fun(Data)-> log_success end),
         meck:expect(riakc_obj, new, fun(Bucket,Key,Value) -> done end),
         meck:expect(riakc_pb_socket, put, fun(Riak_pid,Request) -> worked end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
         meck:unload(riakc_obj),
-        meck:unload(riakc_pb_socket)
+        meck:unload(riakc_pb_socket),
+        meck:unload(gen_log_manager)
     end,
 
     [%This is the list of tests to be generated and run.
         
         % fix these later to appropriate response value
-        ?_assertEqual({reply,worked,some_Db_PID},
-                            delivered_server:mark_delivered(<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}">>)),
-        ?_assertEqual({reply,{fail,bad_JSON},some_Db_PID},
-                            delivered_server:mark_delivered(<<"{\"uuid\": \"blah\"">>))
+        ?_assertEqual({reply,success,some_state},
+                            delivered_server:handle_cast({mark_delivered,some_data},some_state)),
+        ?_assertEqual({reply,{fail,bad_data},some_state},
+                            delivered_server:handle_cast({mark_delivered,[]},some_state)), 
+        ?_assertEqual(log_success, gen_log_manager:log("{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\", \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}"))
     ]}.
 %%
 %% Unit tests go here. 
