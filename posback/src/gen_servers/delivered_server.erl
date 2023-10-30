@@ -114,18 +114,18 @@ handle_call(stop, _From, _State) ->
 %% @end
 %%--------------------------------------------------------------------
 -record (json, {uuid, lat, long, time}).
--spec handle_cast(Msg::term(), State::term()) -> {noreply, term()} |
+-spec handle_cast(Msg::term(), Riak_pid::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
 % handle_cast(_Msg, State) ->
 %     % print hello
 %     io:format("Hello~n"),
 %     {noreply, State};
-handle_cast({mark_delivered,Package_data}, State) when is_map_key(<<"uuid">> , Package_data) ->
-    db_api_service:store_delivery(Package_data),
-    {reply,stored,State};
-handle_cast({mark_delivered,_}, State)->
-    {reply,{fail,bad_data},State}.
+handle_cast({mark_delivered,Package_data}, Riak_pid) when is_map_key(<<"uuid">> , Package_data) ->
+    db_api_service:store_delivery(Package_data, Riak_pid),
+    {noreply,Riak_pid};
+handle_cast({mark_delivered,_}, Riak_pid)->
+    {noreply,Riak_pid}.
     % Decode another json string as a test
 
 % % Print out the JSON to see its structure
@@ -226,7 +226,7 @@ delivered_server_test_() ->
         % Need to mock the RIAK database and the logger event manager
         % placeholder mocking
         meck:new(db_api_service, [non_strict]),
-        meck:expect(db_api_service, store_delivery, fun(Data) -> stored end)
+        meck:expect(db_api_service, store_delivery, fun(Data, Riak_pid) -> stored end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
         meck:unload(db_api_service)
@@ -235,10 +235,10 @@ delivered_server_test_() ->
     [%This is the list of tests to be generated and run.
         
         % fix these later to appropriate response value
-        ?_assertEqual({reply,stored,some_state},
+        ?_assertEqual({noreply,some_state},
                             delivered_server:handle_cast({mark_delivered,#{<<"lat">> => 40.7128,<<"long">> => -74.006,<<"time">> => 1634578382,
    <<"uuid">> => <<"550e8400-e29b-41d4-a716-446655440000">>}},some_state)),
-        ?_assertEqual({reply,{fail,bad_data},some_state},
+        ?_assertEqual({noreply,some_state},
                             delivered_server:handle_cast({mark_delivered,[]},some_state))
     ]}.
 %%

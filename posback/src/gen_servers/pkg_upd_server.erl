@@ -113,14 +113,14 @@ handle_call(stop, _From, _State) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec handle_cast(Msg::term(), State::term()) -> {noreply, term()} |
+-spec handle_cast(Msg::term(), Riak_pid::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-handle_cast({package_locate,Package_data}, State) when is_map_key(<<"pkg_uuid">> , Package_data) ->
-    db_api_service:store_pkg_update(Package_data),
-    {reply, success,State};
-handle_cast({package_locate, _}, State) ->
-    {reply, {fail,bad_data},State}.
+handle_cast({package_locate,Package_data}, Riak_pid) when is_map_key(<<"pkg_uuid">> , Package_data) ->
+    db_api_service:store_pkg_update(Package_data, Riak_pid),
+    {noreply,Riak_pid};
+handle_cast({package_locate, _}, Riak_pid) ->
+    { noreply, Riak_pid}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -177,7 +177,7 @@ pkg_upd_server_test_() ->
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
         meck:new(db_api_service, [non_strict]),
         % Need to mock the RIAK database and the logger event manager
-        meck:expect(db_api_service, store_pkg_update, fun(Data) -> stored end)
+        meck:expect(db_api_service, store_pkg_update, fun(Data, Riak_pid) -> stored end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
         meck:unload(db_api_service)
@@ -186,11 +186,11 @@ pkg_upd_server_test_() ->
     [%This is the list of tests to be generated and run.
 
         % fix these later to appropriate response value
-        ?_assertEqual({reply,success,some_state},
+        ?_assertEqual({noreply,some_state},
                             pkg_upd_server:handle_cast({package_locate,#{<<"time">> => 1634578382,
    <<"loc_uuid">> => <<"550e8400-e29b-41d4-a716-446655440000">>, 
 <<"pkg_uuid">> => <<"550e8400-e29b-41d4-a716-446655440001">>}},some_state)),
-        ?_assertEqual({reply,{fail,bad_data},some_state},
+        ?_assertEqual({noreply,some_state},
                             pkg_upd_server:handle_cast({package_locate,<<"{\"pkg_uuid\": \"blah\"">>},some_state))
 
     ]}.

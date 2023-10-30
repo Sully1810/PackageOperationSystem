@@ -113,14 +113,14 @@ handle_call(stop, _From, _State) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec handle_cast(Msg::term(), State::term()) -> {noreply, term()} |
+-spec handle_cast(Msg::term(), Riak_pid::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-handle_cast({mark_location,Vehicle_data}, State) when is_map_key(<<"loc_uuid">> , Vehicle_data) ->
-    db_api_service:store_loc_update(Vehicle_data),
-    {reply, stored,State};
-handle_cast({mark_location, _}, State) ->
-    {reply, {fail,bad_data},State}.
+handle_cast({mark_location,Vehicle_data}, Riak_pid) when is_map_key(<<"loc_uuid">> , Vehicle_data) ->
+    db_api_service:store_loc_update(Vehicle_data,  Riak_pid),
+    {noreply, Riak_pid};
+handle_cast({mark_location, _},  Riak_pid) ->
+    {noreply, Riak_pid}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -177,7 +177,7 @@ rpt_loc_server_test_() ->
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
         % Need to mock the RIAK database and the logger event manager
         meck:new(db_api_service, [non_strict]),
-        meck:expect(db_api_service, store_loc_update, fun(Data) -> stored end)
+        meck:expect(db_api_service, store_loc_update, fun(Data, Riak_pid) -> stored end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
         meck:unload(db_api_service)
@@ -186,9 +186,9 @@ rpt_loc_server_test_() ->
     [%This is the list of tests to be generated and run.
 
         % fix these later to appropriate response value
-        ?_assertEqual({reply,stored,some_state},
+        ?_assertEqual({noreply,some_state},
                             rpt_loc_server:handle_cast({mark_location,#{<<"loc_uuid">> => <<"550e8400-e29b-41d4-a716-446655440000">>, <<"lat">> => 40.7128, <<"long">> => -74.006, <<"time">> => 1634578382}},some_state)),
-        ?_assertEqual({reply,{fail,bad_data},some_state},
+        ?_assertEqual({noreply,some_state},
                             rpt_loc_server:handle_cast({mark_location,[]},some_state))
     ]}.
 %%
