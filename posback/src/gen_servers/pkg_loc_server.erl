@@ -92,16 +92,26 @@ init([]) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec handle_call(Request::term(), From::pid(), State::term()) ->
+-spec handle_call(Request::term(), From::pid(), Riak_pid::term()) ->
                                   {reply, term(), term()} |
                                   {reply, term(), term(), integer()} |
                                   {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term(), integer()} | 
                                   {stop, term(), term()}.
-handle_call({package_locate,Package_data}, _Riak_pid, State) ->
-        {reply,{lat,long,time,delivered},State};
-handle_call(stop, _From, _State) ->
+
+
+        %% 
+handle_call({package_locate,Package_data}, _From, Riak_pid) when is_map_key(<<"uuid">> , Package_data)->
+
+    Pkg_loc_data = db_api_service:get_pkg_location(Package_data, Riak_pid),
+        
+        {reply,Pkg_loc_data,Riak_pid};
+
+handle_call({package_locate, _}, _From, _Riak_pid) ->
+    {reply,{fail,bad_data},_Riak_pid};
+
+handle_call(stop, _From, _Riak_pid) ->
         {stop,normal,
                 replace_stopped,
           down}. %% setting the server's internal state to down
@@ -173,28 +183,21 @@ pkg_loc_server_test_() ->
     {setup,
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
         % Need to mock the RIAK database and the logger event manager
-        meck:new(riakc_obj),
-        meck:new(riakc_pb_socket),
-        meck:new(gen_log_manager, [non_strict]),
-        meck:expect(riakc_obj, new, fun(Bucket,Key,Value) -> done end),
-        meck:expect(riakc_pb_socket, put, fun(Riak_pid,Request) -> worked end),
-        meck:expect(gen_log_manager, log, fun(Data) -> log_success end)
+        meck:new(db_api_service, [non_strict]),
+        meck:expect(db_api_service, get_pkg_location, fun(Data, Riak_pid) -> {lat,long,time, is_delivered} end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
-        meck:unload(riakc_obj),
-        meck:unload(riakc_pb_socket),
-        meck:unload(gen_log_manager)
+     meck:unload(db_api_service)
+    
     end,
-
     [%This is the list of tests to be generated and run.
-
         % fix these later to appropriate response value
-        ?_assertEqual({reply,{lat,long,time,delivered},some_state},
-                            pkg_loc_server:handle_call({package_locate,<<"{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"}">>},some_Db_PID,some_state)),
-        ?_assertEqual({reply,{fail,bad_JSON},some_state},
-                            pkg_loc_server:handle_call({package_locate,"blah"},some_Db_PID,some_state)),
-        ?_assertEqual(log_success, gen_log_manager:log("{\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\"}"))
+        ?_assertEqual({reply,{lat,long,time, is_delivered},some_state},
+                            pkg_loc_server:handle_call({package_locate,#{<<"uuid">> => <<"550e8400-e29b-41d4-a716-446655440000">>}}, from,some_state)),
+        ?_assertEqual({reply,{fail,bad_data},some_state},
+                            pkg_loc_server:handle_call({package_locate,"blah"},from,some_state))
     ]}.
+       
 %%
 %% Unit tests go here. 
 %%

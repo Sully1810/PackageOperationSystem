@@ -116,8 +116,11 @@ handle_call(stop, _From, _State) ->
 -spec handle_cast(Msg::term(), State::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-handle_cast({mark_location,Vehicle_data}, State) ->
-    {reply,success,State}.
+handle_cast({mark_location,Vehicle_data}, State) when is_map_key(<<"loc_uuid">> , Vehicle_data) ->
+    db_api_service:store_loc_update(Vehicle_data),
+    {reply, stored,State};
+handle_cast({mark_location, _}, State) ->
+    {reply, {fail,bad_data},State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -173,27 +176,20 @@ rpt_loc_server_test_() ->
     {setup,
      fun() -> %this setup fun is run once befor the tests are run. If you want setup and teardown to run for each test, change {setup to {foreach
         % Need to mock the RIAK database and the logger event manager
-        meck:new(riakc_obj),
-        meck:new(riakc_pb_socket),
-        meck:new(gen_log_manager, [non_strict]),
-        meck:expect(riakc_obj, new, fun(Bucket,Key,Value) -> done end),
-        meck:expect(riakc_pb_socket, put, fun(Riak_pid,Request) -> worked end),
-        meck:expect(gen_log_manager, log, fun(Data) -> log_success end)
+        meck:new(db_api_service, [non_strict]),
+        meck:expect(db_api_service, store_loc_update, fun(Data) -> stored end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
-        meck:unload(riakc_obj),
-        meck:unload(riakc_pb_socket),
-        meck:unload(gen_log_manager)
+        meck:unload(db_api_service)
     end,
 
     [%This is the list of tests to be generated and run.
 
         % fix these later to appropriate response value
-        ?_assertEqual({reply,success,some_state},
-                            rpt_loc_server:handle_cast({mark_location,some_data},some_state)),
-        ?_assertEqual({reply,{fail,bad_JSON},some_Db_PID},
-                            rpt_loc_server:handle_cast({mark_location,[]},some_state)),
-        ?_assertEqual(log_success, gen_log_manager:log("{\"loc_uuid\": \"550e8400-e29b-41d4-a716-446655440000\",\"uuid\": \"550e8400-e29b-41d4-a716-446655440000\" \"lat\": 40.7128, \"long\": -74.0060, \"time\": 1634578382}"))
+        ?_assertEqual({reply,stored,some_state},
+                            rpt_loc_server:handle_cast({mark_location,#{<<"loc_uuid">> => <<"550e8400-e29b-41d4-a716-446655440000">>, <<"lat">> => 40.7128, <<"long">> => -74.006, <<"time">> => 1634578382}},some_state)),
+        ?_assertEqual({reply,{fail,bad_data},some_state},
+                            rpt_loc_server:handle_cast({mark_location,[]},some_state))
     ]}.
 %%
 %% Unit tests go here. 
