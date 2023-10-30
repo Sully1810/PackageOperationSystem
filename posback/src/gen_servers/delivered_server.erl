@@ -21,7 +21,7 @@
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+         terminate/2, code_change/3, mark_delivered/1]).
 
 
 %%%===================================================================
@@ -99,8 +99,8 @@ init([]) ->
                                   {noreply, term(), integer()} |
                                   {stop, term(), term(), integer()} | 
                                   {stop, term(), term()}.
-handle_call(Request, From, State) ->
-        {reply,replace_started,State};
+%handle_call(Request, _From, State) ->
+ %       {reply,Request,State};
 handle_call(stop, _From, _State) ->
         {stop,normal,
                 replace_stopped,
@@ -113,7 +113,7 @@ handle_call(stop, _From, _State) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--record (json, {uuid, lat, long, time}).
+
 -spec handle_cast(Msg::term(), Riak_pid::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
@@ -226,7 +226,7 @@ delivered_server_test_() ->
         % Need to mock the RIAK database and the logger event manager
         % placeholder mocking
         meck:new(db_api_service, [non_strict]),
-        meck:expect(db_api_service, store_delivery, fun(Data, Riak_pid) -> stored end)
+        meck:expect(db_api_service, store_delivery, fun(_Data, _Riak_pid) -> stored end)
      end,
      fun(_) ->%This is the teardown fun. Notice it takes one, ignored in this example, parameter.
         meck:unload(db_api_service)
