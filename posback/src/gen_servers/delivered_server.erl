@@ -38,6 +38,7 @@
 %%--------------------------------------------------------------------
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
+    riakc_pb_socket:start_link("rdb.fordark.org", 8087), % start riak, params are domain and port, NEED TO CHANGE THE DOMAIN NAME/PORT
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 %%--------------------------------------------------------------------
 %% @doc
