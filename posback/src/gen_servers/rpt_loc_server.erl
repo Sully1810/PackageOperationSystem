@@ -38,7 +38,7 @@
 %%--------------------------------------------------------------------
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 %%--------------------------------------------------------------------
 %% @doc
 %% Starts a server using this module and registers the server using
