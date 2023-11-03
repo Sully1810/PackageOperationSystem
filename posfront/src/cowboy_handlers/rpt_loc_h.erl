@@ -10,10 +10,16 @@ init(Req0, Opts) ->
 	cb_log_manager:log(jsx:decode(Data)), % send to logger
 	call_mark_location(jsx:decode(Data)),   
 	io:format("successfully called mark_location in backend~n"),
-	Response = cowboy_req:reply(200, #{
-		<<"content-type">> => <<"text/json">>
-	}, success, Req0),
-	{ok, Response, Opts}.
+
+	% Response = cowboy_req:reply(200, #{
+	% 	<<"content-type">> => <<"text/json">>
+	% }, success, Req0),
+
+	Req = cowboy_req:reply(200, #{
+                <<"content-type">> => <<"text/plain">>
+        }, "Hello world!", Req0),
+    {ok, Req, Opts}.
+
 
 
 call_mark_location(JSON) ->
