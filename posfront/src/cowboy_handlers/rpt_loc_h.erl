@@ -17,13 +17,14 @@ init(Req0, Opts) ->
 
 call_mark_location(JSON) ->
 	% Send parsed JSON to back end
-	case global:whereis_name(rpt_loc_server) of
-        undefined ->
-            {error, global_not_found};
-        PID ->
-            Value = PID:mark_location(JSON),
-            {ok, Value}
-    end.
+	gen_server:cast(rpt_loc_server, {mark_location, JSON}).
+	% case global:whereis_name(rpt_loc_server) of
+    %     undefined ->
+    %         {error, global_not_found};
+    %     PID ->
+    %         Value = PID:mark_location(JSON),
+    %         {ok, Value}
+    % end.
 	% rpt_loc_server:mark_location(JSON).
 
 -ifdef(EUNIT).
