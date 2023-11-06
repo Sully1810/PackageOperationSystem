@@ -11,13 +11,13 @@ init(Req0, Opts) ->
 	call_update_location(jsx:decode(Data)),     
 	Response = cowboy_req:reply(200, #{
 		<<"content-type">> => <<"text/json">>
-	}, success, Req0),
+	}, "Success", Req0),
 	{ok, Response, Opts}.
 
 
 call_update_location(JSON) ->
 	% Send parsed JSON to back end
-	pkg_upd_server:update_location(JSON).
+	gen_server:cast(pkg_upd_server, {update_location, JSON}).
 
 -ifdef(EUNIT).
 
