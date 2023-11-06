@@ -18,7 +18,7 @@ init(Req0, Opts) ->
 
 call_package_locate(JSON) ->
 	% Send parsed JSON to back end
-	pkg_loc_server:package_locate(JSON).
+	gen_server:call(pkg_loc_server, {package_locate, JSON}).	
 
 -ifdef(EUNIT).
 
