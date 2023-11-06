@@ -11,12 +11,12 @@ init(Req0, Opts) ->
 	call_mark_delivered(jsx:decode(Data)),  
 	Response = cowboy_req:reply(200, #{
 		<<"content-type">> => <<"text/json">>
-	}, success, Req0),
+	}, "Success", Req0),
 	{ok, Response, Opts}.
 
 call_mark_delivered(JSON) ->
 	% Send parsed JSON to back end
-	delivered_server:mark_delivered(JSON).
+	gen_server:cast(delivered_server, {mark_delivered, JSON}).
 
 -ifdef(EUNIT).
 
