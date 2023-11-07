@@ -9,6 +9,7 @@ init(Req0, Opts) ->
 	% Parsing the JSON file
 	cb_log_manager:log(jsx:decode(Data)), % send to logger
 	Package_data = call_package_locate(jsx:decode(Data)),
+	io:format("~p~n", [Package_data]),
 	Response = cowboy_req:reply(200, #{
 		<<"content-type">> => <<"text/json">>
 	}, jsx:encode(Package_data), Req0),
