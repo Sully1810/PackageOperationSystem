@@ -117,6 +117,7 @@ handle_call(stop, _From, _State) ->
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
 handle_cast({package_locate,Package_data}, Riak_pid) when is_map_key(<<"pkg_uuid">> , Package_data) ->
+    io:format("Package_data: ~p~n", [Package_data]),
     db_api_service:store_pkg_update(Package_data, Riak_pid),
     {noreply,Riak_pid};
 handle_cast({package_locate, _}, Riak_pid) ->
