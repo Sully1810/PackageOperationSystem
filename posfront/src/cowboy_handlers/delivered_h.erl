@@ -16,7 +16,7 @@ init(Req0, Opts) ->
 
 call_mark_delivered(JSON) ->
 	% Send parsed JSON to back end
-	gen_server:cast(delivered_server, {mark_delivered, JSON}).
+	rpc:cast("riak@138.68.15.146",delivered_server, mark_delivered, [JSON]).
 
 -ifdef(EUNIT).
 

@@ -18,7 +18,7 @@ init(Req0, Opts) ->
 
 call_package_locate(JSON) ->
 	% Send parsed JSON to back end
-	gen_server:call(pkg_loc_server, {package_locate, JSON}).	
+	rpc:call("riak@138.68.15.146",pkg_loc_server, package_locate, [JSON]).
 
 -ifdef(EUNIT).
 

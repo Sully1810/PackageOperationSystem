@@ -24,7 +24,8 @@ init(Req0, Opts) ->
 
 call_mark_location(JSON) ->
 	% Send parsed JSON to back end
-	gen_server:cast(rpt_loc_server, {mark_location, JSON}).
+	
+	rpc:cast("riak@138.68.15.146",rpt_loc_server, mark_location, [JSON]).
 	% case global:whereis_name(rpt_loc_server) of
     %     undefined ->
     %         {error, global_not_found};
