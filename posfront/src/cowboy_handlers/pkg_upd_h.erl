@@ -16,8 +16,10 @@ init(Req0, Opts) ->
 
 
 call_update_location(JSON) ->
+	io:format("JSON: ~p~n", [JSON]),
 	% Send parsed JSON to back end
-	gen_server:cast(pkg_upd_server, {update_location, JSON}).
+	gen_server:cast(pkg_upd_server, {update_location, JSON}),
+	io:format("Sent to back end~n", []).
 
 -ifdef(EUNIT).
 
