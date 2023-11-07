@@ -38,6 +38,7 @@
 %%--------------------------------------------------------------------
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
+    io:format("Starting ~p~n",[?MODULE]),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 %%--------------------------------------------------------------------
 %% @doc
