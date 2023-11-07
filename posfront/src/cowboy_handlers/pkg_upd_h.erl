@@ -18,8 +18,8 @@ init(Req0, Opts) ->
 call_update_location(JSON) ->
 	io:format("JSON: ~p~n", [JSON]),
 	% Send parsed JSON to back end
-
-	rpc:cast("riak@138.68.15.146",pkg_upd_server, update_location, [JSON]),
+	% riak@138.68.15.14
+	rpc:cast(riak,pkg_upd_server, update_location, [JSON]),
 	io:format("Sent to back end~n", []).
 
 -ifdef(EUNIT).
