@@ -14,6 +14,7 @@
 -define(SERVER, ?MODULE).
 
 start_link() ->
+  io:format("Starting ~p~n",[?MODULE]),
     supervisor:start_link({global, ?SERVER}, ?MODULE, []).
 
 %% sup_flags() = #{strategy => strategy(),         % optional
@@ -37,6 +38,7 @@ start_link() ->
 %     }.
 
 init([]) ->
+  io:format("Initializing ~p~n",[?MODULE]),
     SupFlags = #{strategy => one_for_all,
                  intensity => 0,
                  period => 1},
@@ -66,6 +68,7 @@ init([]) ->
           type => worker,
           modules => [rpt_loc_server]}
         ],
+        io:format("ChildSpecs: ~p~n",[ChildSpecs]),
     {ok, {SupFlags, ChildSpecs}}.
 
 %% internal functions
