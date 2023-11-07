@@ -15,7 +15,7 @@
 
 start_link() ->
   io:format("Starting ~p~n",[?MODULE]),
-    supervisor:start_link({global, ?SERVER}, ?MODULE, []).
+    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 %% sup_flags() = #{strategy => strategy(),         % optional
 %%                 intensity => non_neg_integer(), % optional
