@@ -71,7 +71,7 @@ stop() -> gen_server:call(?MODULE, stop).
 mark_location(Vehicle_data) ->
     % Tuple requires two parameters: function name and Package_uuid data
     % Package_uuid data is now a map
-    gen_server:cast(?MODULE, {mark_location, Vehicle_data}).
+    gen_server:cast({global,?MODULE}, {mark_location, Vehicle_data}).
 
 %%%===================================================================
 %%% gen_server callbacks

@@ -69,7 +69,7 @@ stop() -> gen_server:call(?MODULE, stop).
 update_location(Package_uuid) ->
     % Tuple requires two parameters: function name and Package_uuid data
     % Package_uuid data is now a map
-    gen_server:call(?MODULE, {package_locate, Package_uuid}).
+    gen_server:call({global,?MODULE}, {package_locate, Package_uuid}).
 
 %%%===================================================================
 %%% gen_server callbacks

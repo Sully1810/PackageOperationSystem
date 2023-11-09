@@ -70,7 +70,7 @@ stop() -> gen_server:call(?MODULE, stop).
 mark_delivered(Package_data) ->
     % Tuple requires two parameters: function name and JSON data
     % JSON data is now a map
-    gen_server:cast(?MODULE, {mark_delivered, Package_data}).
+    gen_server:cast({global,?MODULE}, {mark_delivered, Package_data}).
 
 %%%===================================================================
 %%% gen_server callbacks
