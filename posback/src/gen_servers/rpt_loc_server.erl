@@ -69,7 +69,7 @@ stop() -> gen_server:call(?MODULE, stop).
 %% Any other API functions go here.
 
 mark_location(Vehicle_data) ->
-    io:format("Received ~p~n",[Vehicle_data]),
+  
     % Tuple requires two parameters: function name and Package_uuid data
     % Package_uuid data is now a map
     gen_server:cast({global,?MODULE}, {mark_location, Vehicle_data}).
@@ -120,6 +120,8 @@ handle_call(stop, _From, _State) ->
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
 handle_cast({mark_location,Vehicle_data}, Riak_pid) when is_map_key(<<"loc_uuid">> , Vehicle_data) ->
+    % erpc:cast('riak@138.68.15.146',rpt_loc_server, mark_location, [test]).
+    io:format("Vehicle data: ~p~n",[Vehicle_data]),
     db_api_service:store_loc_update(Vehicle_data,  Riak_pid),
     {noreply, Riak_pid};
 handle_cast({mark_location, _},  Riak_pid) ->
