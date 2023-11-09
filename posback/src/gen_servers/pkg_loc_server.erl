@@ -103,22 +103,22 @@ init([]) ->
 
 
 %         %% 
-handle_call({package_locate,Package_data}, _From, Riak_pid) when is_map_key(<<"uuid">> , Package_data)->
+% handle_call({package_locate,Package_data}, _From, Riak_pid) when is_map_key(<<"uuid">> , Package_data)->
 
-    Pkg_loc_data = db_api_service:get_pkg_location(Package_data, Riak_pid),
+%     Pkg_loc_data = db_api_service:get_pkg_location(Package_data, Riak_pid),
         
-        {reply,Pkg_loc_data,Riak_pid};
+%         {reply,Pkg_loc_data,Riak_pid};
 
-handle_call({package_locate, _}, _From, _Riak_pid) ->
-    {reply,{fail,bad_data},_Riak_pid};
+% handle_call({package_locate, _}, _From, _Riak_pid) ->
+%     {reply,{fail,bad_data},_Riak_pid};
 
-handle_call(stop, _From, _Riak_pid) ->
-        {stop,normal,
-                replace_stopped,
-          down}. %% setting the server's internal state to down
-% handle_call(Msg, _From, State) ->
-%     io:format("Received ~p~n",[Msg]),
-%     {reply, Msg, State}.
+% handle_call(stop, _From, _Riak_pid) ->
+%         {stop,normal,
+%                 replace_stopped,
+%           down}. %% setting the server's internal state to down
+handle_call(Msg, _From, State) ->
+    io:format("Received ~p~n",[Msg]),
+    {reply, Msg, State}.
 
 %%--------------------------------------------------------------------
 %% @private
