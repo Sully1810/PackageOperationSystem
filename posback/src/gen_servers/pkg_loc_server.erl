@@ -70,8 +70,8 @@ stop() -> gen_server:call(?MODULE, stop).
 package_locate(Package_data) ->
     % Tuple requires two parameters: function name and JSON data
     % JSON data is now a map
-    io:format("Package data: ~p~n",[Package_data]).
-    % gen_server:call({global,?MODULE}, {package_locate, Package_data}).
+    io:format("Package data: ~p~n",[Package_data]),
+    gen_server:call({global,?MODULE}, {package_locate, Package_data}).
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
