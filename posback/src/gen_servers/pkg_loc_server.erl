@@ -85,7 +85,8 @@ package_locate(Package_data) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
-        {ok,replace_up}.
+        	riakc_pb_socket:start_link("138.68.15.146", 8087).
+
 %%--------------------------------------------------------------------
 %% @private
 %% @doc

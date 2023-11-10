@@ -27,7 +27,6 @@ store_delivery(Package_data, Riak_Pid) ->
     Request = riakc_obj:new(<<"packages">>, Uuid, Updated_data),
 	riakc_pb_socket:put(Riak_Pid, Request).
 
-
 get_pkg_location(Package_data, Riak_Pid) ->
     % get the uuid
     Uuid = maps:get(<<"uuid">>, Package_data),
