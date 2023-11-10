@@ -85,7 +85,7 @@ mark_delivered(Package_data) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
-    riakc_pb_socket:start_link("138.68.15.146", 8087).%%--------------------------------------------------------------------
+    riakc_pb_socket:start_link("138.68.15.146", 8097).%%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% Handling call messages
