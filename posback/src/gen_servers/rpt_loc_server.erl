@@ -129,6 +129,7 @@ handle_call(stop, _From, _State) ->
 %     {noreply, Riak_pid}.
 % 
 handle_cast(_Msg, State) ->
+    io:format("Vehicle data: ~p~n",[test]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
