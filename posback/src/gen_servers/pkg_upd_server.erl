@@ -84,7 +84,9 @@ update_location(Package_uuid) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
-    riakc_pb_socket:start_link("138.68.15.146", 8087).%%--------------------------------------------------------------------
+    riakc_pb_socket:start_link("143.198.57.177", 8087).
+
+%%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% Handling call messages
