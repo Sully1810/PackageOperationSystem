@@ -36,21 +36,26 @@ get_pkg_location(Package_data, Riak_Pid) ->
     binary_to_term(riakc_obj:get_value(Fetched)).
 
 
-store_pkg_update(Request_data, Riak_Pid) ->
-    % get the uuid
-    Pkg_uuid = maps:get(<<"pkg_uuid">>, Request_data),
-    Loc_uuid = maps:get(<<"loc_uuid">>, Request_data),
-    % Fetch the package & vehicle data from riak
-	{_,Fetched_package} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Pkg_uuid),
-    {_,Fetched_location} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Loc_uuid),
-    % Convert the fetched data to a term
-	Package_data = binary_to_term(riakc_obj:get_value(Fetched_package)),
-    Location_data = binary_to_term(riakc_obj:get_value(Fetched_location)),  % {lat, long, time}
-    % Prepend the last package location/timestamp and delivery status
-    Updated_data = [Location_data|Package_data],
-    % Put the updated data back into riak
-    Request = riakc_obj:new(<<"packages">>, Pkg_uuid, Updated_data),
-	riakc_pb_socket:put(Riak_Pid, Request).
+    store_pkg_update(Request_data, Riak_Pid) ->
+        % get the uuids
+        Pkg_uuid = maps:get(<<"pkg_uuid">>, Request_data),
+        Loc_uuid = maps:get(<<"loc_uuid">>, Request_data),
+        % Fetch the package & vehicle data from riak
+        {ok, Fetched_package} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Pkg_uuid),
+        {ok, Fetched_location} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Loc_uuid),
+        % Convert the fetched data to a term
+        Package_data = binary_to_term(riakc_obj:get_value(Fetched_package)),
+        Location_data = binary_to_term(riakc_obj:get_value(Fetched_location)),
+        % Validate data format here
+        % ...
+        % Prepend the last package location/timestamp and delivery status
+        Updated_data = [Location_data | Package_data],
+        % Serialize Updated_data if necessary
+        % ...
+        % Put the updated data back into riak
+        Request = riakc_obj:new(<<"packages">>, Pkg_uuid, Updated_data),
+        riakc_pb_socket:put(Riak_Pid, Request).
+    
 
 
 
