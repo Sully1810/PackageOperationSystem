@@ -117,12 +117,15 @@ handle_call(stop, _From, _State) ->
 -spec handle_cast(Msg::term(), Riak_pid::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-                                handle_cast({package_locate,Package_data}, Riak_pid) when is_map_key(<<"pkg_uuid">>, Package_data) ->
-                                    io:format("Sending Package_data to API: ~p~n", [Package_data]),
-                                    db_api_service:store_pkg_update(Package_data, Riak_pid),
-                                    {noreply,Riak_pid};
+                                handle_cast({package_locate, Package_data}, Riak_pid) when is_map_key(<<"pkg_uuid">>, Package_data) ->
+                                    io:format("pkg_upd_server: Received package_locate request with Package_data: ~p~n", [Package_data]),
+                                    Result = db_api_service:store_pkg_update(Package_data, Riak_pid),
+                                    io:format("pkg_upd_server: Result from db_api_service:store_pkg_update: ~p~n", [Result]),
+                                    {noreply, Riak_pid};
+                                
                                 handle_cast({package_locate, _}, Riak_pid) ->
-                                    { noreply, Riak_pid}.
+                                    io:format("pkg_upd_server: Received package_locate request with invalid data~n"),
+                                    {noreply, Riak_pid}.
                                 
 
 %%--------------------------------------------------------------------
