@@ -88,7 +88,7 @@ mark_location(Vehicle_data) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
-    riakc_pb_socket:start_link("138.68.15.146", 8097).%%--------------------------------------------------------------------
+    riakc_pb_socket:start_link("138.68.15.146", 8087).%%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% Handling call messages
