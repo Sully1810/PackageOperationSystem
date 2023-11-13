@@ -37,24 +37,33 @@ get_pkg_location(Package_data, Riak_Pid) ->
 
 
     store_pkg_update(Request_data, Riak_Pid) ->
-        % get the uuids
         Pkg_uuid = maps:get(<<"pkg_uuid">>, Request_data),
         Loc_uuid = maps:get(<<"loc_uuid">>, Request_data),
+        
         % Fetch the package & vehicle data from riak
-        {ok, Fetched_package} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Pkg_uuid),
-        {ok, Fetched_location} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Loc_uuid),
-        % Convert the fetched data to a term
-        Package_data = binary_to_term(riakc_obj:get_value(Fetched_package)),
-        Location_data = binary_to_term(riakc_obj:get_value(Fetched_location)),
-        % Validate data format here
-        % ...
-        % Prepend the last package location/timestamp and delivery status
-        Updated_data = [Location_data | Package_data],
-        % Serialize Updated_data if necessary
-        % ...
+        Package_data = fetch_data(Riak_Pid, <<"packages">>, Pkg_uuid),
+        Location_data = fetch_data(Riak_Pid, <<"packages">>, Loc_uuid),
+    
+        % Validate and update data
+        Updated_data = case {Package_data, Location_data} of
+                           {[], _} -> []; % No package data found
+                           {_, []} -> Package_data; % No location data found
+                           {_, _} -> [Location_data | Package_data] % Both data found
+                       end,
+    
+        % Serialize Updated_data if necessary (assuming it's a list of tuples)
+        Serialized_data = term_to_binary(Updated_data),
+    
         % Put the updated data back into riak
-        Request = riakc_obj:new(<<"packages">>, Pkg_uuid, Updated_data),
+        Request = riakc_obj:new(<<"packages">>, Pkg_uuid, Serialized_data),
         riakc_pb_socket:put(Riak_Pid, Request).
+    
+    fetch_data(Riak_Pid, Bucket, Key) ->
+        case riakc_pb_socket:get(Riak_Pid, Bucket, Key) of
+            {ok, Obj} -> binary_to_term(riakc_obj:get_value(Obj));
+            {error, _} -> []
+        end.
+    
     
 
 
