@@ -40,29 +40,28 @@ get_pkg_location(Package_data, Riak_Pid) ->
         Pkg_uuid = maps:get(<<"pkg_uuid">>, Request_data),
         Loc_uuid = maps:get(<<"loc_uuid">>, Request_data),
         
-        % Fetch the package & vehicle data from riak
-        Package_data = fetch_data(Riak_Pid, <<"packages">>, Pkg_uuid),
-        Location_data = fetch_data(Riak_Pid, <<"packages">>, Loc_uuid),
+        % Fetch or initialize package & location data
+        Package_data = fetch_or_init_data(Riak_Pid, <<"packages">>, Pkg_uuid),
+        Location_data = fetch_or_init_data(Riak_Pid, <<"packages">>, Loc_uuid),
     
-        % Validate and update data
-        Updated_data = case {Package_data, Location_data} of
-                           {[], _} -> []; % No package data found
-                           {_, []} -> Package_data; % No location data found
-                           {_, _} -> [Location_data | Package_data] % Both data found
-                       end,
+        % Update the package data with location data
+        Updated_data = [Location_data | Package_data],
     
-        % Serialize Updated_data if necessary (assuming it's a list of tuples)
+        % Serialize Updated_data (assuming it's a list of tuples)
         Serialized_data = term_to_binary(Updated_data),
     
         % Put the updated data back into riak
         Request = riakc_obj:new(<<"packages">>, Pkg_uuid, Serialized_data),
         riakc_pb_socket:put(Riak_Pid, Request).
     
-    fetch_data(Riak_Pid, Bucket, Key) ->
+    fetch_or_init_data(Riak_Pid, Bucket, Key) ->
         case riakc_pb_socket:get(Riak_Pid, Bucket, Key) of
             {ok, Obj} -> binary_to_term(riakc_obj:get_value(Obj));
-            {error, _} -> []
+            {error, notfound} -> []; % Initialize with an empty list if not found
+            {error, _} -> % Handle other errors as needed
+                []
         end.
+    
     
     
 
