@@ -7,7 +7,7 @@ init(Req0, Opts) ->
 	%it is expected that the data consists of one quoted-string name
 	%in an array.
 	% Parsing the JSON file
-	%cb_log_manager:log(jsx:decode(Data)), % send to logger
+	cb_log_manager:log(jsx:decode(Data)), % send to logger
 	Package_data = call_package_locate(jsx:decode(Data)),
 	io:format("~p~n", [Package_data]),
 	Encoded_data = jsx:encode(Package_data),
