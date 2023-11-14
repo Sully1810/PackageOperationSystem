@@ -11,12 +11,12 @@ init(Req0, Opts) ->
 	Package_data = call_package_locate(jsx:decode(Data)),
 	io:format("successfully called package_locate in backend~n"),
 	io:format("~p~n", [Package_data]),
-	Encoded_data = jsx:encode(Package_data),
+	Encoded_data = jsx:encode(lists:flatten(io_lib:format("~p", [Package_data]))),
 	io:format("successfully recieved~n"),
 	io:format("~p~n", [Encoded_data]),
 	Response = cowboy_req:reply(200, #{
 		<<"content-type">> => <<"text/json">>
-	}, jsx:encode(Package_data), Req0),
+	}, Encoded_data, Req0),
 	{ok, Response, Opts}.
 
 
