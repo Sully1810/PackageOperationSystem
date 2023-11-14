@@ -69,7 +69,7 @@ stop() -> gen_server:call(?MODULE, stop).
 update_location(Package_uuid) ->
     % Tuple requires two parameters: function name and Package_uuid data
     % Package_uuid data is now a map
-    gen_server:call({global,?MODULE}, {package_locate, Package_uuid}).
+    gen_server:cast({global,?MODULE}, {package_locate, Package_uuid}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -117,12 +117,13 @@ handle_call(stop, _From, _State) ->
 -spec handle_cast(Msg::term(), Riak_pid::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-                                handle_cast({package_locate,Package_data}, Riak_pid) when is_map_key(<<"pkg_uuid">> , Package_data) ->
-                                    io:format("Package_data: ~p~n", [Package_data]),
-                                    db_api_service:store_pkg_update(Package_data, Riak_pid),
-                                    {noreply,Riak_pid};
-                                handle_cast({package_locate, _}, Riak_pid) ->
-                                    { noreply, Riak_pid}.
+
+handle_cast({package_locate,Package_data}, Riak_pid) when is_map_key(<<"pkg_uuid">> , Package_data) ->
+    io:format("Package_data: ~p~n", [Package_data]),
+    db_api_service:store_pkg_update(Package_data, Riak_pid),
+    {noreply,Riak_pid};
+handle_cast({package_locate, _}, Riak_pid) ->
+    { noreply, Riak_pid}.
                                 
 
 %%--------------------------------------------------------------------
