@@ -31,7 +31,7 @@ store_delivery(Package_data, Riak_Pid) ->
 
 get_pkg_location(Package_data, Riak_Pid) ->
     % get the uuid
-    Uuid = maps:get(<<"uuid">>, Package_data),
+    Uuid = maps:get(<<"pkg_uuid">>, Package_data),
     % Fetch the package data from riak
     {_,Fetched} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Uuid),
     % Convert the fetched data to a term and return it
