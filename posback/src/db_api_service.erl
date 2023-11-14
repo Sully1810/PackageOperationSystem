@@ -31,14 +31,14 @@ store_delivery(Package_data, Riak_Pid) ->
 
 get_pkg_location(Package_data, Riak_Pid) ->
     % get the uuid
-    Uuid = maps:get(<<"uuid">>, Package_data),
+    Uuid = maps:get(<<"pkg_uuid">>, Package_data),
     % Fetch the package data from riak
     {_,Fetched} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Uuid),
     % Convert the fetched data to a term and return it
     Data = binary_to_term(riakc_obj:get_value(Fetched)),
     %Print the data to the console
     io:format("Data: ~p~n", [Data]),
-    binary_to_term(riakc_obj:get_value(Data)).
+    Data.
 
 store_pkg_update(Request_data, Riak_Pid) ->
     Pkg_uuid = maps:get(<<"pkg_uuid">>, Request_data),
