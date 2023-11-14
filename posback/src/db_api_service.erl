@@ -25,6 +25,8 @@ store_delivery(Package_data, Riak_Pid) ->
 
     % Put the updated data back into riak
     Request = riakc_obj:new(<<"packages">>, Uuid, Updated_data),
+    % Print the request to the console
+    io:format("Request: sent to RIAK ~p~n", [Request]),
 	riakc_pb_socket:put(Riak_Pid, Request).
 
 get_pkg_location(Package_data, Riak_Pid) ->
@@ -33,7 +35,10 @@ get_pkg_location(Package_data, Riak_Pid) ->
     % Fetch the package data from riak
     {_,Fetched} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Uuid),
     % Convert the fetched data to a term and return it
-    binary_to_term(riakc_obj:get_value(Fetched)).
+    Data = binary_to_term(riakc_obj:get_value(Fetched)),
+    %Print the data to the console
+    io:format("Data: ~p~n", [Data]),
+    binary_to_term(riakc_obj:get_value(Data)).
 
     store_pkg_update(Request_data, Riak_Pid) ->
         Pkg_uuid = maps:get(<<"pkg_uuid">>, Request_data),
