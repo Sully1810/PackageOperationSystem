@@ -135,6 +135,7 @@ handle_cast(_Msg, State) ->
     io:format("Vehicle data: ~p~n",[test]),
     %Print the message
     io:format("Received ~p~n",[_Msg]),
+    io:format("State: ~p~n",[State]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
