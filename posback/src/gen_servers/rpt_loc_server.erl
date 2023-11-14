@@ -88,7 +88,8 @@ mark_location(Vehicle_data) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
-    riakc_pb_socket:start_link("143.198.57.177", 8087).
+  {ok, Pid} =  riakc_pb_socket:start_link("143.198.57.177", 8087),
+    Io:format("Riak pid: ~p~n", [Pid]).
 
 %%--------------------------------------------------------------------
 %% @private
