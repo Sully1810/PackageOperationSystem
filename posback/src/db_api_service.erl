@@ -16,12 +16,12 @@ store_delivery(Package_data, Riak_Pid) ->
     % get the uuid
     Uuid = maps:get(<<"uuid">>, Package_data),
     % Fetch the package data from riak
-	{_,Fetched} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Uuid),
+	% {_,Fetched} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Uuid),
     % Convert the fetched data to a term
-	Data = binary_to_term(riakc_obj:get_value(Fetched)),
+	% Data = binary_to_term(riakc_obj:get_value(Fetched)),
     % Prepend the last package location/timestamp and delivery status
     Last_timestamp = {maps:get(<<"lat">>, Package_data), maps:get(<<"long">>, Package_data), maps:get(<<"time">>, Package_data)},
-    Updated_data = {[Last_timestamp|Data], delivered},
+    Updated_data = {Last_timestamp, delivered},
 
     % Put the updated data back into riak
     Request = riakc_obj:new(<<"packages">>, Uuid, Updated_data),
