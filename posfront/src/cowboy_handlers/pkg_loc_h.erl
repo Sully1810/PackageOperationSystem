@@ -9,8 +9,10 @@ init(Req0, Opts) ->
 	% Parsing the JSON file
 	cb_log_manager:log(jsx:decode(Data)), % send to logger
 	Package_data = call_package_locate(jsx:decode(Data)),
+	io:format("successfully called package_locate in backend~n"),
 	io:format("~p~n", [Package_data]),
 	Encoded_data = jsx:encode(Package_data),
+	io:format("successfully recieved~n"),
 	io:format("~p~n", [Encoded_data]),
 	Response = cowboy_req:reply(200, #{
 		<<"content-type">> => <<"text/json">>
@@ -21,7 +23,7 @@ init(Req0, Opts) ->
 
 call_package_locate(JSON) ->
 	% Send parsed JSON to back end
-	rpc:call('backend@138.68.15.14',pkg_loc_server, package_locate, [JSON]).
+	rpc:call('backend@138.68.15.146',pkg_loc_server, package_locate, [JSON]).
 
 -ifdef(EUNIT).
 

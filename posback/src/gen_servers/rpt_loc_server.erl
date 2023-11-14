@@ -88,7 +88,9 @@ mark_location(Vehicle_data) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
-    riakc_pb_socket:start_link("143.198.57.177", 8087).
+  {ok, Pid} =  riakc_pb_socket:start_link("143.198.57.177", 8087),
+    io:format("rpt_loc_server started ~p~n", [Pid]),
+    {ok, Pid}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -131,6 +133,8 @@ handle_call(stop, _From, _State) ->
 % 
 handle_cast(_Msg, State) ->
     io:format("Vehicle data: ~p~n",[test]),
+    %Print the message
+    io:format("Received ~p~n",[_Msg]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
