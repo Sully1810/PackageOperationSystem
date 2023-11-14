@@ -38,7 +38,7 @@ get_pkg_location(Package_data, Riak_Pid) ->
     Data = binary_to_term(riakc_obj:get_value(Fetched)),
     %Print the data to the console
     io:format("Data: ~p~n", [Data]),
-    binary_to_term(riakc_obj:get_value(Data)).
+   Data.
 
     store_pkg_update(Request_data, Riak_Pid) ->
         Pkg_uuid = maps:get(<<"pkg_uuid">>, Request_data),
