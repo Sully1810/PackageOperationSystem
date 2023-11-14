@@ -123,20 +123,21 @@ handle_call(stop, _From, _State) ->
 -spec handle_cast(Msg::term(), Riak_pid::term()) -> {noreply, term()} |
                                   {noreply, term(), integer()} |
                                   {stop, term(), term()}.
-% handle_cast({mark_location,Vehicle_data}, Riak_pid) when is_map_key(<<"loc_uuid">> , Vehicle_data) ->
-%     % erpc:cast('riak@138.68.15.146',rpt_loc_server, mark_location, [test]).
-%     io:format("Vehicle data: ~p~n",[Vehicle_data]),
-%     db_api_service:store_loc_update(Vehicle_data,  Riak_pid),
-%     {noreply, Riak_pid};
-% handle_cast({mark_location, _},  Riak_pid) ->
-%     {noreply, Riak_pid}.
-% 
-handle_cast(_Msg, State) ->
-    io:format("Vehicle data: ~p~n",[test]),
-    %Print the message
-    io:format("Received ~p~n",[_Msg]),
-    io:format("State: ~p~n",[State]),
-    {noreply, State}.
+
+handle_cast({mark_location,Vehicle_data}, Riak_pid) when is_map_key(<<"loc_uuid">> , Vehicle_data) ->
+    % erpc:cast('riak@138.68.15.146',rpt_loc_server, mark_location, [test]).
+    io:format("Vehicle data: ~p~n",[Vehicle_data]),
+    db_api_service:store_loc_update(Vehicle_data,  Riak_pid),
+    {noreply, Riak_pid};
+handle_cast({mark_location, _},  Riak_pid) ->
+    {noreply, Riak_pid}.
+
+% handle_cast(_Msg, State) ->
+%     io:format("Vehicle data: ~p~n",[test]),
+%     %Print the message
+%     io:format("Received ~p~n",[_Msg]),
+%     io:format("State: ~p~n",[State]),
+%     {noreply, State}.
 
 %%--------------------------------------------------------------------
 %% @private
