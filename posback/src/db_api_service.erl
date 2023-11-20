@@ -71,6 +71,7 @@ fetch_or_init_data(Riak_Pid, Bucket, Key) ->
 store_loc_update(Vehicle_data, Riak_Pid) ->
     % get the uuid
     Loc_uuid = maps:get(<<"loc_uuid">>, Vehicle_data),
+    io:format("Loc_uuid: ~p~n", [Loc_uuid]),
     % Parse the Vehicle data into a tuple and put it into the db
     Updated_data = {maps:get(<<"lat">>, Vehicle_data), maps:get(<<"long">>, Vehicle_data), maps:get(<<"time">>, Vehicle_data)},
     io:format("Updated Data: ~p~n", [Updated_data]),
