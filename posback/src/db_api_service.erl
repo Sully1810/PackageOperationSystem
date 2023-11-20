@@ -73,6 +73,7 @@ store_loc_update(Vehicle_data, Riak_Pid) ->
     Loc_uuid = maps:get(<<"loc_uuid">>, Vehicle_data),
     % Parse the Vehicle data into a tuple and put it into the db
     Updated_data = {maps:get(<<"lat">>, Vehicle_data), maps:get(<<"long">>, Vehicle_data), maps:get(<<"time">>, Vehicle_data)},
+    io:format("Updated Data: ~p~n", [Updated_data]),
     % Put the updated data back into riak
     Request = riakc_obj:new(<<"packages">>, Loc_uuid, Updated_data),
 	riakc_pb_socket:put(Riak_Pid, Request).
