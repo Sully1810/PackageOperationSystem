@@ -8,7 +8,7 @@ init(Req0, Opts) ->
 	%in an array.
 	% Parsing the JSON file
 	cb_log_manager:log(jsx:decode(Data)), % send to logger
-	call_mark_location(jsx:decode(Data)),   
+	call_mark_location(jsx:decode(Data)). 
 	%io:format("successfully called mark_location in backend~n"),
 
 	% Response = cowboy_req:reply(200, #{
