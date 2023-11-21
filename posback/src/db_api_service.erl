@@ -26,7 +26,7 @@ store_delivery(Package_data, Riak_Pid) ->
     % Put the updated data back into riak
     Request = riakc_obj:new(<<"packages">>, Uuid, Updated_data),
     % Print the request to the console
-    io:format("Request: sent to RIAK ~p~n", [Request]),
+    %io:format("Request: sent to RIAK ~p~n", [Request]),
 	riakc_pb_socket:put(Riak_Pid, Request).
 
 get_pkg_location(Package_data, Riak_Pid) ->
@@ -37,7 +37,7 @@ get_pkg_location(Package_data, Riak_Pid) ->
     % Convert the fetched data to a term and return it
     Data = binary_to_term(riakc_obj:get_value(Fetched)),
     %Print the data to the console
-    io:format("Data: ~p~n", [Data]),
+    %io:format("Data: ~p~n", [Data]),
     Data.
 
 store_pkg_update(Request_data, Riak_Pid) ->
@@ -64,17 +64,17 @@ fetch_or_init_data(Riak_Pid, Bucket, Key) ->
         {ok, Obj} -> binary_to_term(riakc_obj:get_value(Obj));
         {error, notfound} -> []; % Initialize with an empty list if not found
         {error, _} -> 
-            io:format("Error fetching data for Key: ~p~n", [Key]),
+            %io:format("Error fetching data for Key: ~p~n", [Key]),
             []
     end.
 
 store_loc_update(Vehicle_data, Riak_Pid) ->
     % get the uuid
     Loc_uuid = maps:get(<<"loc_uuid">>, Vehicle_data),
-    io:format("Loc_uuid: ~p~n", [Loc_uuid]),
+   % io:format("Loc_uuid: ~p~n", [Loc_uuid]),
     % Parse the Vehicle data into a tuple and put it into the db
     Updated_data = {maps:get(<<"lat">>, Vehicle_data), maps:get(<<"long">>, Vehicle_data), maps:get(<<"time">>, Vehicle_data)},
-    io:format("Updated Data: ~p~n", [Updated_data]),
+    %io:format("Updated Data: ~p~n", [Updated_data]),
     % Put the updated data back into riak
     Request = riakc_obj:new(<<"packages">>, Loc_uuid, Updated_data),
 	riakc_pb_socket:put(Riak_Pid, Request).

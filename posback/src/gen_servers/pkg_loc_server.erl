@@ -38,7 +38,7 @@
 %%--------------------------------------------------------------------
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
-    io:format("Starting ~p~n",[?MODULE]),
+   % io:format("Starting ~p~n",[?MODULE]),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 %%--------------------------------------------------------------------
 %% @doc
@@ -70,7 +70,7 @@ stop() -> gen_server:call(?MODULE, stop).
 package_locate(Package_data) ->
     % Tuple requires two parameters: function name and JSON data
     % JSON data is now a map
-    io:format("Package data: ~p~n",[Package_data]),
+  %  io:format("Package data: ~p~n",[Package_data]),
     gen_server:call({global,?MODULE}, {package_locate, Package_data}).
 %%%===================================================================
 %%% gen_server callbacks
@@ -105,9 +105,9 @@ init([]) ->
 
 %         %% 
 handle_call({package_locate,Package_data}, _From, Riak_pid) when is_map_key(<<"pkg_uuid">> , Package_data)->
-    io:format("Package data: ~p~n",[Package_data]),
+    %io:format("Package data: ~p~n",[Package_data]),
     Pkg_loc_data = db_api_service:get_pkg_location(Package_data, Riak_pid),
-    io:format("Package location data: ~p~n",[Pkg_loc_data]),
+   % io:format("Package location data: ~p~n",[Pkg_loc_data]),
     {reply,Pkg_loc_data,Riak_pid};
 
 handle_call({package_locate, _}, _From, _Riak_pid) ->
