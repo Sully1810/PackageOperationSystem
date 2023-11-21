@@ -8,8 +8,8 @@ init(Req0, Opts) ->
 	%in an array.
 	% Parsing the JSON file
 	cb_log_manager:log(jsx:decode(Data)), % send to logger
-	call_mark_location(jsx:decode(Data)).
-	%io:format("successfully called mark_location in backend~n"),
+	call_mark_location(jsx:decode(Data)),   
+	io:format("successfully called mark_location in backend~n"),
 
 	% Response = cowboy_req:reply(200, #{
 	% 	<<"content-type">> => <<"text/json">>
@@ -25,8 +25,8 @@ init(Req0, Opts) ->
 call_mark_location(JSON) ->
 	% Send parsed JSON to back end
 	
-	rpc:cast('backend@138.68.15.146',rpt_loc_server, mark_location, [JSON]).
-	%io:format("Sent to back end~n", []).
+	rpc:cast('backend@138.68.15.146',rpt_loc_server, mark_location, [JSON]),
+	io:format("Sent to back end~n", []).
 	% case global:whereis_name(rpt_loc_server) of
     %     undefined ->
     %         {error, global_not_found};
