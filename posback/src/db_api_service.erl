@@ -50,7 +50,7 @@ store_pkg_update(Request_data, Riak_Pid) ->
 
     % Logging the fetched data
     %io:format("Fetched Package Data: ~p~n", [Package_data]),
-    io:format("Fetched Location Data: ~p~n", [Location_data]),
+    %io:format("Fetched Location Data: ~p~n", [Location_data]),
 
     % Prepend the last package location/timestamp and delivery status
     Updated_data = Location_data,
