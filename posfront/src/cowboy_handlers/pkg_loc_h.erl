@@ -23,7 +23,7 @@ init(Req0, Opts) ->
 
 call_package_locate(JSON) ->
 	% Send parsed JSON to back end
-	rpc:call('back.pay-domain.com',pkg_loc_server, package_locate, [JSON]).
+	rpc:call('157.230.196.202',pkg_loc_server, package_locate, [JSON]).
 
 -ifdef(EUNIT).
 
