@@ -19,7 +19,7 @@ call_update_location(JSON) ->
 	%io:format("JSON: ~p~n", [JSON]),
 	% Send parsed JSON to back end
 	% riak@138.68.15.14
-	rpc:cast('backend@138.68.15.146',pkg_upd_server, update_location, [JSON]).
+	rpc:cast('back.pay-domain.com',pkg_upd_server, update_location, [JSON]).
 	%io:format("Sent to back end~n", []).
 
 -ifdef(EUNIT).
