@@ -16,7 +16,7 @@ init(Req0, Opts) ->
 
 call_mark_delivered(JSON) ->
 	% Send parsed JSON to back end
-	rpc:cast('backend@138.68.15.146',delivered_server, mark_delivered, [JSON]).
+	rpc:cast('backend@157.230.196.202',delivered_server, mark_delivered, [JSON]).
 	%io:format("Sent to back end~n", []).
 
 -ifdef(EUNIT).
