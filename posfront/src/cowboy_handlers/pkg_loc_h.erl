@@ -23,7 +23,7 @@ init(Req0, Opts) ->
 
 call_package_locate(JSON) ->
 	% Send parsed JSON to back end
-	rpc:call('backend@165.232.48.38',pkg_loc_server, package_locate, [JSON]).
+	rpc:call('rrobin_serv@165.232.48.38',pkg_loc_server, package_locate, [JSON]).
 
 -ifdef(EUNIT).
 
