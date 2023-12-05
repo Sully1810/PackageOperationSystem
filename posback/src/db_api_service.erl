@@ -35,6 +35,7 @@ get_pkg_location(Package_data, Riak_Pid) ->
     % Fetch the package data from riak
     {_,Fetched} = riakc_pb_socket:get(Riak_Pid, <<"packages">>, Uuid),
     % Convert the fetched data to a term and return it
+    io:format("Fetched: ~p~n", [Fetched]),
     Data = binary_to_term(riakc_obj:get_value(Fetched)),
     %Print the data to the console
     %io:format("Data: ~p~n", [Data]),
