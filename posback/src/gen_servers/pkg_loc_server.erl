@@ -105,9 +105,9 @@ init([]) ->
 
 %         %% 
 handle_call({package_locate,Package_data}, _From, Riak_pid) when is_map_key(<<"pkg_uuid">> , Package_data)->
-    %io:format("Package data: ~p~n",[Package_data]),
+    io:format("Package data: ~p~n",[Package_data]),
     Pkg_loc_data = db_api_service:get_pkg_location(Package_data, Riak_pid),
-   % io:format("Package location data: ~p~n",[Pkg_loc_data]),
+    io:format("Package location data: ~p~n",[Pkg_loc_data]),
     {reply,Pkg_loc_data,Riak_pid};
 
 handle_call({package_locate, _}, _From, _Riak_pid) ->
@@ -157,7 +157,8 @@ handle_info(_Info, State) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec terminate(Reason::term(), term()) -> term().
-terminate(_Reason, _State) ->
+terminate(Reason, State) ->
+    io:format("Terminating ~p ~p ~p ~n",[?MODULE ,Reason,State]),
     ok.
     
 %%--------------------------------------------------------------------
