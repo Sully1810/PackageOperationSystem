@@ -24,8 +24,8 @@ init(Req0, Opts) ->
 
 call_mark_location(JSON) ->
 	% Send parsed JSON to back end
-	
-	rpc:cast('rrobin_serv@165.232.48.38',rpt_loc_server, mark_location, [JSON]).
+	Backend_node = rpc:call('rrobin_serv@165.232.48.38', rrobin_serv, next, []),
+	rpc:cast(Backend_node, rpt_loc_server, mark_location, [JSON]).
 	%io:format("Sent to back end~n", []).
 	% case global:whereis_name(rpt_loc_server) of
     %     undefined ->
