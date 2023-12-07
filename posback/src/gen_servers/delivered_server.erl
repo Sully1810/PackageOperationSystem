@@ -85,6 +85,7 @@ mark_delivered(Package_data) ->
 %%--------------------------------------------------------------------
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
+    io:format("delivered_server started ~n"),
     riakc_pb_socket:start_link("143.198.57.177", 8087).
 
 %%--------------------------------------------------------------------
