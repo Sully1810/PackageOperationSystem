@@ -163,7 +163,8 @@ handle_info(_Info, State) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec terminate(Reason::term(), term()) -> term().
-terminate(_Reason, _State) ->
+terminate(Reason, State) ->
+    io:format("rpt_loc_server terminated, reason: ~p~n, state: ~p~n", [Reason, State]),
     ok.
     
 %%--------------------------------------------------------------------
