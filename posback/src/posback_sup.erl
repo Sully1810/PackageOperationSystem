@@ -40,7 +40,7 @@ start_link() ->
 init([]) ->
  % io:format("Initializing ~p~n",[?MODULE]),
     SupFlags = #{strategy => one_for_all,
-                 intensity => 0,
+                 intensity => 20,
                  period => 1},
     ChildSpecs = [
         #{id => delivered_server,
