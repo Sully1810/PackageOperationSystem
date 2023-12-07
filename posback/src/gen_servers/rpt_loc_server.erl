@@ -89,9 +89,9 @@ mark_location(Vehicle_data) ->
 -spec init(term()) -> {ok, term()}|{ok, term(), number()}|ignore |{stop, term()}.
 init([]) ->
     io:format("rpt_loc_server started ~n"),
-    {ok, Pid} =  riakc_pb_socket:start_link("143.198.57.177", 8087),
+    % {ok, Pid} =  riakc_pb_socket:start_link("143.198.57.177", 8087),
   %  io:format("rpt_loc_server started ~p~n", [Pid]),
-    {ok, Pid}.
+    {ok, hello_world}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -128,7 +128,7 @@ handle_call(stop, _From, _State) ->
 handle_cast({mark_location,Vehicle_data}, Riak_pid) when is_map_key(<<"loc_uuid">> , Vehicle_data) ->
     % erpc:cast('riak@138.68.15.146',rpt_loc_server, mark_location, [test]).
    % io:format("Vehicle data: ~p~n",[Vehicle_data]),
-    db_api_service:store_loc_update(Vehicle_data,  Riak_pid),
+    % db_api_service:store_loc_update(Vehicle_data,  Riak_pid),
     {noreply, Riak_pid};
 handle_cast({mark_location, _},  Riak_pid) ->
     {noreply, Riak_pid}.
