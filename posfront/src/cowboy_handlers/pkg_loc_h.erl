@@ -23,9 +23,12 @@ init(Req0, Opts) ->
 
 call_package_locate(JSON) ->
 	% Send parsed JSON to back end
+	%Print what nodes you know about through io format
+	io:format("~p~n", [nodes()]),
 	Backend_node = rpc:call('rrobin_serv@165.232.48.38', rrobin_serv, next, []),
 	io:format("Backend node: ~p~n", [Backend_node]),
-	rpc:call(Backend_node, pkg_loc_server, package_locate, [JSON]).
+	rpc:call(Backend_node, pkg_loc_server, package_locate, [JSON]),
+	io:format("~p~n", [nodes()]).
 
 -ifdef(EUNIT).
 
