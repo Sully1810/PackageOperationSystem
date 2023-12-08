@@ -38,7 +38,7 @@
 %%--------------------------------------------------------------------
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
-    gen_server:start_link({global, {?MODULE, node()}}, ?MODULE, [], []).
+    gen_server:start_link({global, list_to_atom(atom_to_list(?MODULE) ++ '-' ++ node())}, ?MODULE, [], []).
     %io:format("rpt_loc_server started ~p~n", [Pid]).
     %global:register_name(rpt_loc_server, Pid).
 %%--------------------------------------------------------------------
