@@ -27,7 +27,7 @@ call_package_locate(JSON) ->
 	io:format("~p~n", [nodes()]),
 	Backend_node = rpc:call('rrobin_serv@165.232.48.38', rrobin_serv, next, []),
 	io:format("Backend node: ~p~n", [Backend_node]),
-	rpc:call(Backend_node, list_to_atom("pkg_loc_server-" ++ Backend_node), package_locate, [JSON]),
+	rpc:call(list_to_atom(Backend_node), list_to_atom("pkg_loc_server-" ++ Backend_node), package_locate, [JSON]),
 	io:format("~p~n", [nodes()]).
 
 -ifdef(EUNIT).
