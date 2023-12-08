@@ -39,7 +39,7 @@
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
    % io:format("Starting ~p~n",[?MODULE]),
-    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
+    gen_server:start_link({global, {?MODULE, node()}}, ?MODULE, [], []).
 %%--------------------------------------------------------------------
 %% @doc
 %% Starts a server using this module and registers the server using
