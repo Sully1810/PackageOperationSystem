@@ -20,7 +20,7 @@ call_update_location(JSON) ->
 	% Send parsed JSON to back end
 	% riak@138.68.15.14
 	Backend_node = rpc:call('rrobin_serv@165.232.48.38', rrobin_serv, next, []),
-	rpc:cast(Backend_node, list_to_atom('pkg_upd_server-' ++ Backend_node), update_location, [JSON]).
+	rpc:cast(Backend_node, list_to_atom("pkg_upd_server-" ++ Backend_node), update_location, [JSON]).
 	%io:format("Sent to back end~n", []).
 
 -ifdef(EUNIT).
