@@ -39,7 +39,7 @@
 -spec start() -> {ok, pid()} | ignore | {error, term()}.
 start() ->
     % riakc_pb_socket:start_link("rdb.fordark.org", 8087), % start riak, params are domain and port, NEED TO CHANGE THE DOMAIN NAME/PORT
-    gen_server:start_link({global, list_to_atom(atom_to_list(?MODULE) ++ '-' ++ atom_to_list(node()))}, ?MODULE, [], []).
+    gen_server:start_link({global, list_to_atom(atom_to_list(?MODULE) ++ "-" ++ atom_to_list(node()))}, ?MODULE, [], []).
 %%--------------------------------------------------------------------
 %% @doc
 %% Starts a server using this module and registers the server using
