@@ -69,7 +69,7 @@ stop() -> gen_server:call(?MODULE, stop).
 %% Any other API functions go here.
 
 mark_location(Vehicle_data) ->
-   % io:format("Vehicle data: ~p~n",[Vehicle_data]),
+    io:format("Vehicle data: ~p~n",[Vehicle_data]),
   
     % Tuple requires two parameters: function name and Package_uuid data
     % Package_uuid data is now a map
