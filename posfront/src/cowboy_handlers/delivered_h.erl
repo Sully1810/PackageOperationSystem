@@ -18,7 +18,7 @@ call_mark_delivered(JSON) ->
 	% Send parsed JSON to back end
 	Backend_node = rpc:call('rrobin_serv@165.232.48.38', rrobin_serv, next, []),
 	io:format("Backend node: ~p~n", [Backend_node]),
-	rpc:cast(Backend_node, delivered_server, mark_delivered, [JSON]).
+	rpc:cast(Backend_node, {delivered_server, Backend_node}, mark_delivered, [JSON]).
 	%io:format("Sent to back end~n", []).
 
 -ifdef(EUNIT).
