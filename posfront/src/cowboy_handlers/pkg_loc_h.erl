@@ -8,9 +8,10 @@ init(Req0, Opts) ->
 	%in an array.
 	% Parsing the JSON file
 	cb_log_manager:log(jsx:decode(Data)), % send to logger
+	io:format("Attempting to talk to backend~n"),
 	Package_data = call_package_locate(jsx:decode(Data)),
-	%io:format("successfully called package_locate in backend~n"),
-	%io:format("~p~n", [Package_data]),
+	io:format("successfully called package_locate in backend~n"),
+	io:format("~p~n", [Package_data]),
 	Encoded_data = jsx:encode(lists:flatten(io_lib:format("~p", [Package_data]))),
 	%io:format("successfully recieved~n"),
 	%io:format("~p~n", [Encoded_data]),
